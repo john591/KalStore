@@ -1,13 +1,25 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Menu, Search, ShoppingCart, User, ChevronDown, Store } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import CategoriesMegaMenu from "@/components/CategoriesMegaMenu";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
 
   const navLinks = [
@@ -28,114 +40,155 @@ export default function Navbar() {
     }
 
     router.push(`/search?query=${encodeURIComponent(trimmed)}`);
-    setIsOpen(false);
+    setMobileOpen(false);
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
-        <Link href="/" className="text-2xl font-bold text-gray-900">
-          KalStore
+    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6">
+        <Link
+          href="/"
+          className="flex items-center gap-2 shrink-0"
+        >
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <Store className="h-5 w-5" />
+          </div>
+          <div className="hidden sm:block">
+            <p className="text-lg font-bold leading-none">KalStore</p>
+            <p className="text-xs text-muted-foreground">Smart marketplace</p>
+          </div>
         </Link>
+
+        <div className="hidden lg:block">
+          <CategoriesMegaMenu />
+        </div>
 
         <form
           onSubmit={handleSearch}
-          className="hidden flex-1 md:flex md:max-w-md"
+          className="hidden flex-1 md:flex"
         >
-          <input
-            type="text"
-            placeholder="Search products..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="w-full rounded-l-xl border border-r-0 border-gray-300 px-4 py-2 text-sm outline-none focus:border-black"
-          />
-          <button
-            type="submit"
-            className="rounded-r-xl bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-          >
-            Search
-          </button>
+          <div className="relative w-full">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search products, suppliers, categories..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="h-11 rounded-full border-border bg-background pl-10 pr-28"
+            />
+            <Button
+              type="submit"
+              className="absolute right-1 top-1/2 h-9 -translate-y-1/2 rounded-full px-5"
+            >
+              Search
+            </Button>
+          </div>
         </form>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="hidden items-center gap-5 lg:flex">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-medium text-gray-700 transition hover:text-black"
+              className="text-sm font-medium text-muted-foreground transition hover:text-foreground"
             >
               {link.name}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 md:flex">
-          <button className="rounded-lg border px-4 py-2 text-sm font-medium transition hover:bg-gray-100">
+        <div className="hidden items-center gap-2 md:flex">
+          <Button variant="ghost" size="icon" className="rounded-full">
+            <ShoppingCart className="h-5 w-5" />
+          </Button>
+
+          <Button variant="outline" className="rounded-full">
+            <User className="mr-2 h-4 w-4" />
             Login
-          </button>
-          <button className="rounded-lg bg-black px-4 py-2 text-sm font-medium text-white transition hover:bg-gray-800">
-            Cart
-          </button>
+          </Button>
         </div>
 
-        <button
-          type="button"
-          className="inline-flex items-center justify-center rounded-lg border p-2 text-gray-700 transition hover:bg-gray-100 md:hidden"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-          aria-expanded={isOpen}
-        >
-          {isOpen ? (
-            <span className="text-xl">✕</span>
-          ) : (
-            <span className="text-xl">☰</span>
-          )}
-        </button>
-      </div>
+        <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="outline"
+              size="icon"
+              className="ml-auto rounded-full md:ml-0 lg:hidden"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
 
-      {isOpen && (
-        <div className="border-t bg-white md:hidden">
-          <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
-            <form onSubmit={handleSearch} className="mb-4 flex">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full rounded-l-xl border border-r-0 border-gray-300 px-4 py-3 text-sm outline-none focus:border-black"
-              />
-              <button
-                type="submit"
-                className="rounded-r-xl bg-black px-4 py-3 text-sm font-medium text-white"
-              >
-                Search
-              </button>
-            </form>
+          <SheetContent side="right" className="w-[320px] sm:w-[380px]">
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2 text-left">
+                <Store className="h-5 w-5" />
+                KalStore
+              </SheetTitle>
+            </SheetHeader>
 
-            <nav className="flex flex-col">
-              {navLinks.map((link) => (
+            <div className="mt-6 space-y-6">
+              <form onSubmit={handleSearch} className="space-y-3">
+                <div className="relative">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    placeholder="Search products..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+                <Button type="submit" className="w-full rounded-full">
+                  Search
+                </Button>
+              </form>
+
+              <Separator />
+
+              <div className="space-y-1">
+                <p className="px-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  Browse
+                </p>
+
                 <Link
-                  key={link.name}
-                  href={link.href}
-                  className="rounded-lg px-3 py-3 text-sm font-medium text-gray-700 transition hover:bg-gray-100 hover:text-black"
-                  onClick={() => setIsOpen(false)}
+                  href="/categories"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center justify-between rounded-lg px-3 py-3 text-sm font-medium transition hover:bg-muted"
                 >
-                  {link.name}
+                  <span>Categories</span>
+                  <ChevronDown className="h-4 w-4" />
                 </Link>
-              ))}
-            </nav>
 
-            <div className="mt-4 flex flex-col gap-3">
-              <button className="rounded-lg border px-4 py-3 text-sm font-medium transition hover:bg-gray-100">
-                Login
-              </button>
-              <button className="rounded-lg bg-black px-4 py-3 text-sm font-medium text-white transition hover:bg-gray-800">
-                Cart
-              </button>
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-lg px-3 py-3 text-sm font-medium transition hover:bg-muted"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
+
+              <Separator />
+
+              <div className="space-y-3">
+                <Button variant="outline" className="w-full rounded-full">
+                  <User className="mr-2 h-4 w-4" />
+                  Login
+                </Button>
+
+                <Button className="w-full rounded-full">
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  Cart
+                </Button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </SheetContent>
+        </Sheet>
+      </div>
     </header>
   );
 }
