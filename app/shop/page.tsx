@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/data/products";
+import { getProducts } from "@/lib/catalog";
 
 type ShopPageProps = {
   searchParams: Promise<{
@@ -12,15 +12,27 @@ type ShopPageProps = {
 
 export default async function ShopPage({ searchParams }: ShopPageProps) {
   const params = await searchParams;
+  const products = await getProducts();
 
   const selectedCategory = params.category?.toLowerCase() || "all";
   const maxPrice = params.maxPrice ? Number(params.maxPrice) : null;
 
-  const categories = Array.from(new Set(products.map((p) => p.category)));
+  const categories = Array.from(
+    new Map(
+      products.map((product) => [
+        product.category.slug,
+        {
+          id: product.category.id,
+          name: product.category.name,
+          slug: product.category.slug,
+        },
+      ]),
+    ).values(),
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   const filteredProducts = products.filter((product) => {
     const categoryMatch =
-      selectedCategory === "all" || product.category === selectedCategory;
+      selectedCategory === "all" || product.category.slug === selectedCategory;
 
     const priceMatch = maxPrice === null || product.price <= maxPrice;
 
@@ -64,19 +76,19 @@ export default async function ShopPage({ searchParams }: ShopPageProps) {
 
               {categories.map((category) => (
                 <a
-                  key={category}
+                  key={category.id}
                   href={
                     maxPrice
-                      ? `/shop?category=${category}&maxPrice=${maxPrice}`
-                      : `/shop?category=${category}`
+                      ? `/shop?category=${category.slug}&maxPrice=${maxPrice}`
+                      : `/shop?category=${category.slug}`
                   }
                   className={`rounded-full px-4 py-2 text-sm capitalize ${
-                    selectedCategory === category
+                    selectedCategory === category.slug
                       ? "bg-black text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >
-                  {category}
+                  {category.name}
                 </a>
               ))}
             </div>

@@ -2,10 +2,12 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Menu, Search, ShoppingCart, User, ChevronDown, Store } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Menu, Search, User, ChevronDown, Store } from "lucide-react";
 
+import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
+import CartButton from "@/components/CartButton";
 import { Input } from "@/components/ui/input";
 import {
   Sheet,
@@ -21,12 +23,18 @@ export default function Navbar() {
   const [query, setQuery] = useState("");
   const [mobileOpen, setMobileOpen] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { isLoggedIn, logout } = useAuth();
+  const currentQuery = searchParams.toString();
+  const returnTo = currentQuery ? `${pathname}?${currentQuery}` : pathname;
+  const loginHref = `/login?redirect=${encodeURIComponent(returnTo)}`;
 
   const navLinks = [
-    { name: "Home", href: "/" },
+    { name: "Accueil", href: "/" },
     { name: "Shop", href: "/shop" },
     { name: "Audio", href: "/categories/audio" },
-    { name: "Gaming", href: "/categories/gaming" },
+    { name: "Jeux", href: "/categories/gaming" },
   ];
 
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
@@ -41,6 +49,10 @@ export default function Navbar() {
 
     router.push(`/search?query=${encodeURIComponent(trimmed)}`);
     setMobileOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
   };
 
   return (
@@ -71,7 +83,7 @@ export default function Navbar() {
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
-              placeholder="Search products, suppliers, categories..."
+              placeholder="Recherche des produits et categories..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="h-11 rounded-full border-border bg-background pl-10 pr-28"
@@ -80,7 +92,7 @@ export default function Navbar() {
               type="submit"
               className="absolute right-1 top-1/2 h-9 -translate-y-1/2 rounded-full px-5"
             >
-              Search
+              Recherche
             </Button>
           </div>
         </form>
@@ -98,14 +110,21 @@ export default function Navbar() {
         </nav>
 
         <div className="hidden items-center gap-2 md:flex">
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <ShoppingCart className="h-5 w-5" />
-          </Button>
+          <CartButton />
 
-          <Button variant="outline" className="rounded-full">
-            <User className="mr-2 h-4 w-4" />
-            Login
-          </Button>
+          {isLoggedIn ? (
+            <Button variant="outline" className="rounded-full" onClick={handleLogout}>
+              <User className="mr-2 h-4 w-4" />
+              Deconnexion
+            </Button>
+          ) : (
+            <Button asChild variant="outline" className="rounded-full">
+              <Link href={loginHref}>
+                <User className="mr-2 h-4 w-4" />
+                Connexion
+              </Link>
+            </Button>
+          )}
         </div>
 
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -140,7 +159,7 @@ export default function Navbar() {
                   />
                 </div>
                 <Button type="submit" className="w-full rounded-full">
-                  Search
+                  Recherche
                 </Button>
               </form>
 
@@ -148,7 +167,7 @@ export default function Navbar() {
 
               <div className="space-y-1">
                 <p className="px-2 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-                  Browse
+                  Parcourir
                 </p>
 
                 <Link
@@ -175,15 +194,25 @@ export default function Navbar() {
               <Separator />
 
               <div className="space-y-3">
-                <Button variant="outline" className="w-full rounded-full">
-                  <User className="mr-2 h-4 w-4" />
-                  Login
-                </Button>
+                {isLoggedIn ? (
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-full"
+                    onClick={handleLogout}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Deconnexion
+                  </Button>
+                ) : (
+                  <Button asChild variant="outline" className="w-full rounded-full">
+                    <Link href={loginHref} onClick={() => setMobileOpen(false)}>
+                      <User className="mr-2 h-4 w-4" />
+                      Connexion
+                    </Link>
+                  </Button>
+                )}
 
-                <Button className="w-full rounded-full">
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  Cart
-                </Button>
+                <CartButton mobile />
               </div>
             </div>
           </SheetContent>

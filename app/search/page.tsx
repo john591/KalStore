@@ -1,7 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/data/products";
+import { getProducts } from "@/lib/catalog";
 
 type SearchPageProps = {
   searchParams: Promise<{
@@ -11,13 +11,16 @@ type SearchPageProps = {
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const params = await searchParams;
+  const products = await getProducts();
   const query = params.query?.toLowerCase().trim() || "";
 
   const filteredProducts = products.filter((product) => {
     return (
       product.name.toLowerCase().includes(query) ||
-      product.category.toLowerCase().includes(query) ||
-      product.description.toLowerCase().includes(query)
+      product.category.name.toLowerCase().includes(query) ||
+      product.description.toLowerCase().includes(query) ||
+      product.brand?.name.toLowerCase().includes(query) ||
+      product.subcategory?.name.toLowerCase().includes(query)
     );
   });
 

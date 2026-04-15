@@ -1,37 +1,10 @@
+import Image from "next/image";
 import Link from "next/link";
+import { getCategories } from "@/lib/catalog";
 
-const categories = [
-  {
-    id: 1,
-    title: "Smartphones",
-    description: "Latest phones for work, content, and daily use.",
-    icon: "📱",
-    slug: "smartphones",
-  },
-  {
-    id: 2,
-    title: "Computing",
-    description: "Powerful and reliable machines for every professional.",
-    icon: "💻",
-    slug: "computing",
-  },
-  {
-    id: 3,
-    title: "Audio",
-    description: "Headphones, speakers, and immersive sound gear.",
-    icon: "🎧",
-    slug: "audio",
-  },
-  {
-    id: 4,
-    title: "Gaming",
-    description: "Gear and devices built for performance and fun.",
-    icon: "🎮",
-    slug: "gaming",
-  },
-];
+export default async function CategoriesSection() {
+  const categories = await getCategories();
 
-export default function CategoriesSection() {
   return (
     <section className="mx-auto max-w-7xl px-6 py-16">
       <div className="mb-10 text-center">
@@ -39,28 +12,38 @@ export default function CategoriesSection() {
           Categories
         </p>
         <h2 className="mt-3 text-3xl font-bold text-gray-900">
-          Shop by Category
+          Achat par Categorie
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-gray-600">
-          Browse our main product lines and find the technology that fits your
-          needs.
+          Parcourez nos principales lignes de produits et trouvez ce qui correspond à vos besoins.
         </p>
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-6">
         {categories.map((category) => (
           <Link
             key={category.id}
             href={`/categories/${category.slug}`}
-            className="rounded-2xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+            className="group overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md"
           >
-            <div className="mb-4 text-4xl">{category.icon}</div>
-            <h3 className="mb-2 text-xl font-semibold text-gray-900">
-              {category.title}
-            </h3>
-            <p className="text-sm leading-6 text-gray-600">
-              {category.description}
-            </p>
+            <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+              <Image
+                src={category.image}
+                alt={category.imageAlt}
+                fill
+                className="object-cover transition duration-500 group-hover:scale-105"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+              />
+            </div>
+            <div className="p-6">
+              <h3 className="mb-2 text-xl font-semibold text-gray-900">
+                {category.name}
+              </h3>
+              <p className="text-sm leading-6 text-gray-600">
+                Parcourir {category.productCount} produit
+                {category.productCount === 1 ? "" : "s"} dans {category.name}.
+              </p>
+            </div>
           </Link>
         ))}
       </div>

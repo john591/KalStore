@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NewsletterForm from "./NewsletterForm";
 
 export default function Footer() {
   return (
@@ -7,8 +8,7 @@ export default function Footer() {
         <div>
           <h2 className="text-2xl font-bold">KalStore</h2>
           <p className="mt-4 text-sm leading-6 text-gray-400">
-            Your trusted destination for modern tech, quality gadgets, and
-            everyday digital essentials.
+            La boutique en ligne.
           </p>
         </div>
 
@@ -19,22 +19,22 @@ export default function Footer() {
           <ul className="mt-4 space-y-3 text-sm text-gray-400">
             <li>
               <Link href="/" className="transition hover:text-white">
-                All Products
+                Tous les produits
               </Link>
             </li>
             <li>
               <Link href="/" className="transition hover:text-white">
-                New Arrivals
+                Arrivages
               </Link>
             </li>
             <li>
               <Link href="/" className="transition hover:text-white">
-                Best Sellers
+                Meilleurs ventes
               </Link>
             </li>
             <li>
               <Link href="/" className="transition hover:text-white">
-                Special Offers
+                Offres spéciales
               </Link>
             </li>
           </ul>
@@ -42,12 +42,12 @@ export default function Footer() {
 
         <div>
           <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-300">
-            Company
+            Notre entreprise
           </h3>
           <ul className="mt-4 space-y-3 text-sm text-gray-400">
             <li>
               <Link href="/" className="transition hover:text-white">
-                About Us
+                A propos de nous
               </Link>
             </li>
             <li>
@@ -57,12 +57,12 @@ export default function Footer() {
             </li>
             <li>
               <Link href="/" className="transition hover:text-white">
-                Privacy Policy
+                Politique de confidentialité
               </Link>
             </li>
             <li>
               <Link href="/" className="transition hover:text-white">
-                Terms of Service
+                Conditions d&apos;utilisation
               </Link>
             </li>
           </ul>
@@ -73,28 +73,14 @@ export default function Footer() {
             Newsletter
           </h3>
           <p className="mt-4 text-sm text-gray-400">
-            Get updates about new products and exclusive deals.
+            Recevez des offres exclusives et les dernières nouvelles de KalStore directement dans votre boîte de réception.
           </p>
-
-          <form className="mt-4 flex flex-col gap-3">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="rounded-lg border border-gray-700 bg-gray-900 px-4 py-3 text-sm text-white outline-none placeholder:text-gray-500 focus:border-white"
-            />
-            <button
-              type="submit"
-              className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-gray-200"
-            >
-              Subscribe
-            </button>
-          </form>
+          <NewsletterForm />
         </div>
       </div>
-
       <div className="border-t border-gray-800">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 py-5 text-sm text-gray-400 md:flex-row">
-          <p>© 2026 KalStore. All rights reserved.</p>
+          <p>© 2026 KalStore. Tout droits réservés.</p>
           <div className="flex gap-4">
             <Link href="/" className="transition hover:text-white">
               Facebook
@@ -103,7 +89,7 @@ export default function Footer() {
               Instagram
             </Link>
             <Link href="/" className="transition hover:text-white">
-              Twitter
+              X
             </Link>
           </div>
         </div>

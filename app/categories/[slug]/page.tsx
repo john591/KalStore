@@ -1,28 +1,18 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { products } from "@/data/products";
+import { getProducts } from "@/lib/catalog";
 
-type CategoryPageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
-};
-
-export async function generateStaticParams() {
-  const categories = Array.from(new Set(products.map((product) => product.category)));
-
-  return categories.map((category) => ({
-    slug: category,
-  }));
-}
-
-export default async function CategoryPage({ params }: CategoryPageProps) {
+export default async function CategoryPage({
+  params,
+}: PageProps<"/categories/[slug]">) {
   const { slug } = await params;
+  const products = await getProducts();
 
   const categoryProducts = products.filter(
-    (product) => product.category === slug
+    (product) => product.category.slug === slug
   );
+  const categoryName = categoryProducts[0]?.category.name ?? slug;
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -34,10 +24,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             Category
           </p>
           <h1 className="mt-2 text-4xl font-bold capitalize text-gray-900">
-            {slug}
+            {categoryName}
           </h1>
           <p className="mt-4 max-w-2xl text-gray-600">
-            Browse products in the {slug} category.
+            Browse products in the {categoryName} category.
           </p>
         </div>
 
